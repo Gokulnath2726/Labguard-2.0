@@ -1,0 +1,92 @@
+<Window x:Class="LabGuard.Host.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LabGuard Host Console" Height="600" Width="900">
+    <Grid Background="#F0F0F0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Header with Animated Logo -->
+        <Border Background="#003366" Padding="16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- Animated Shield Logo -->
+                <Canvas Width="40" Height="40" Margin="0,0,16,0">
+                    <Polygon Points="0,10 20,0 40,10 40,25 20,35 0,25" Fill="#FFD700" />
+                    <Polygon Points="5,12 20,4 35,12 35,23 20,32 5,23" Fill="#003366" />
+                    <TextBlock Canvas.Left="12" Canvas.Top="10" Text="✓" FontSize="16" FontWeight="Bold" Foreground="#FFD700" />
+                    
+                    <!-- Rotation Animation -->
+                    <Canvas.RenderTransform>
+                        <RotateTransform x:Name="LogoRotation" CenterX="20" CenterY="20" Angle="0" />
+                    </Canvas.RenderTransform>
+                </Canvas>
+
+                <!-- Title -->
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="LabGuard" Foreground="White" FontSize="24" FontWeight="Bold" />
+                    <TextBlock Text="Laboratory Monitoring System" Foreground="#E0E0E0" FontSize="12" />
+                </StackPanel>
+
+                <!-- Status Indicator -->
+                <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="16,0,0,0">
+                    <Ellipse Width="12" Height="12" Fill="#00FF00" x:Name="StatusIndicator" />
+                    <TextBlock Text="ACTIVE" Foreground="White" FontSize="10" FontWeight="Bold" Margin="0,4,0,0" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Client List -->
+        <Grid Grid.Row="1" Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="200" />
+            </Grid.ColumnDefinitions>
+
+            <!-- List Panel -->
+            <ListBox x:Name="ClientList" Background="White" BorderThickness="1" BorderBrush="#CCCCCC">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderThickness="0,0,0,1" BorderBrush="#EEEEEE" Padding="8">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Width="16" Height="16" 
+                                         Fill="{Binding Status, Converter={StaticResource StatusToColorConverter}}" />
+                                <StackPanel Grid.Column="1" Margin="12,0">
+                                    <TextBlock Text="{Binding Hostname}" FontWeight="Bold" FontSize="13" />
+                                    <TextBlock Text="{Binding Id}" FontSize="11" Foreground="#666666" />
+                                </StackPanel>
+                                <TextBlock Grid.Column="2" Text="{Binding Status}" 
+                                          FontSize="11" VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Control Panel -->
+            <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Top">
+                <Button Content="Send Warning" Click="OnWarnClick" Padding="12" Margin="0,0,0,8" />
+                <Button Content="Screenshot" Click="OnScreenshotClick" Padding="12" Margin="0,0,0,8" />
+                <Button Content="Shutdown" Click="OnShutdownClick" Padding="12" Margin="0,0,0,8" Background="#FF4444" Foreground="White" />
+            </StackPanel>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="#EEEEEE" BorderThickness="0,1,0,0" BorderBrush="#CCCCCC" Padding="16">
+            <TextBlock x:Name="StatusBlock" Text="Ready" FontSize="12" />
+        </Border>
+    </Grid>
+</Window>

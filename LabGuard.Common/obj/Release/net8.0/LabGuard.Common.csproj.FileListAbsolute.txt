@@ -1,0 +1,11 @@
+C:\23g133\Project\Labguard\LabGuard.Common\bin\Release\net8.0\LabGuard.Common.deps.json
+C:\23g133\Project\Labguard\LabGuard.Common\bin\Release\net8.0\LabGuard.Common.dll
+C:\23g133\Project\Labguard\LabGuard.Common\bin\Release\net8.0\LabGuard.Common.pdb
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.GeneratedMSBuildEditorConfig.editorconfig
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.AssemblyInfoInputs.cache
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.AssemblyInfo.cs
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.csproj.CoreCompileInputs.cache
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.dll
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\refint\LabGuard.Common.dll
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.pdb
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\ref\LabGuard.Common.dll

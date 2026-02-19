@@ -9,3 +9,4 @@ C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.dl
 C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\refint\LabGuard.Common.dll
 C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.pdb
 C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\ref\LabGuard.Common.dll
+C:\23g133\Project\Labguard\LabGuard.Common\obj\Release\net8.0\LabGuard.Common.sourcelink.json

@@ -21,3 +21,10 @@ C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\refint\LabGuar
 C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\LabGuard.Host.pdb
 C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\LabGuard.Host.genruntimeconfig.cache
 C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\ref\LabGuard.Host.dll
+C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\LabGuard.Host.sourcelink.json
+C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\TopologyView.g.cs
+C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\TopologyWindow.g.cs
+C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\LabGuard.Host_MarkupCompile.lref
+C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\TopologyView.baml
+C:\23g133\Project\Labguard\LabGuard.Host\obj\Debug\net8.0-windows\TopologyWindow.baml

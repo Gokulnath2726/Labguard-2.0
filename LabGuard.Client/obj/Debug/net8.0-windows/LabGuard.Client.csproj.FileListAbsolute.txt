@@ -20,3 +20,4 @@ C:\23g133\Project\Labguard\LabGuard.Client\bin\Debug\net8.0-windows\Microsoft.Wi
 C:\23g133\Project\Labguard\LabGuard.Client\bin\Debug\net8.0-windows\System.Drawing.Common.dll
 C:\23g133\Project\Labguard\LabGuard.Client\bin\Debug\net8.0-windows\System.Windows.Forms.dll
 C:\23g133\Project\Labguard\LabGuard.Client\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\Microsoft.Win32.SystemEvents.dll
+C:\23g133\Project\Labguard\LabGuard.Client\obj\Debug\net8.0-windows\LabGuard.Client.sourcelink.json

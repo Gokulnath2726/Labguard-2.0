@@ -1,0 +1,3 @@
+C:\23g133\Project\Labguard\bin\Publish\Host\LabGuard.Host.pdb
+C:\23g133\Project\Labguard\bin\Publish\Host\LabGuard.Common.pdb
+C:\23g133\Project\Labguard\bin\Publish\Host\LabGuard.Host.exe

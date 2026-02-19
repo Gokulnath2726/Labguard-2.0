@@ -1,0 +1,3 @@
+C:\23g133\Project\Labguard\bin\Publish\Client\LabGuard.Client.pdb
+C:\23g133\Project\Labguard\bin\Publish\Client\LabGuard.Common.pdb
+C:\23g133\Project\Labguard\bin\Publish\Client\LabGuard.Client.exe

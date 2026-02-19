@@ -29,6 +29,14 @@ namespace LabGuard.Host
             StatusBlock.Text = "Listening for clients...";
         }
 
+        private void OnTopologyClick(object sender, RoutedEventArgs e)
+        {
+            if (_listener == null) return;
+            var win = new TopologyWindow(_listener);
+            win.Owner = this;
+            win.Show();
+        }
+
         private void AnimateLogo()
         {
             // Create rotation animation for logo

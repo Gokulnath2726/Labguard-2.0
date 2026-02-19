@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
 C:\23g133\Project\Labguard\LabGuard.Host\App.xaml
-11407045341
+3337182805
 
-41816611896
+71018921853
 199-857005327
-MainWindow.xaml;
+MainWindow.xaml;TopologyView.xaml;TopologyWindow.xaml;
 
 False
 

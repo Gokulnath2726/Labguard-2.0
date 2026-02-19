@@ -69,8 +69,10 @@ namespace LabGuard.Host
             {
                 if (!_clientMap.ContainsKey(client.Id))
                 {
-                    _clients.Add(client);
-                    _clientMap[client.Id] = client;
+                    // Ensure we use the record with details if available, else default
+                    var info = new ClientInfo(client.Id, client.Hostname, client.Status, client.Details);
+                    _clients.Add(info);
+                    _clientMap[client.Id] = info;
                     StatusBlock.Text = $"Client connected: {client.Hostname}";
                     Console.WriteLine($"Added client {client.Hostname} to UI");
                 }
@@ -99,7 +101,7 @@ namespace LabGuard.Host
                     var index = _clients.IndexOf(client);
                     if (index >= 0)
                     {
-                        var updated = new ClientInfo(client.Id, client.Hostname, client.Status);
+                        var updated = new ClientInfo(client.Id, client.Hostname, client.Status, details);
                         _clients[index] = updated;
                         _clientMap[clientId] = updated;
                     }
@@ -107,58 +109,94 @@ namespace LabGuard.Host
             });
         }
 
-        private void OnWarnClick(object sender, RoutedEventArgs e)
+        private async void OnWarnClick(object sender, RoutedEventArgs e)
         {
-            if (ClientList.SelectedItem is ClientInfo client && _listener != null)
+            if (_listener == null) return;
+            var target = ClientList.SelectedItem as ClientInfo;
+            var targets = target != null ? new[] { target } : _clients.ToArray();
+
+            if (targets.Length == 0) return;
+
+            string msg = target != null 
+                ? $"Send Warning to {target.Hostname}?" 
+                : $"Send Warning to ALL {targets.Length} clients?";
+
+            if (MessageBox.Show(msg, "Confirm Warning", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+
+            var cmd = new CommandMessage
             {
-                var cmd = new CommandMessage
-                {
-                    MessageType = MessageType.Command,
-                    SenderId = Environment.MachineName,
-                    Psk = Protocol.PSK,
-                    Command = CommandType.Warn,
-                    Payload = "This system is being monitored. Unauthorized use is prohibited."
-                };
-                _ = _listener.SendCommandToClient(client.Id, cmd);
-                MessageBox.Show($"Warning sent to {client.Hostname}", "LabGuard");
+                MessageType = MessageType.Command,
+                SenderId = Environment.MachineName,
+                Psk = Protocol.PSK,
+                Command = CommandType.Warn,
+                Payload = "ALERT: Unauthorized activity detected on your station. Please resume work."
+            };
+
+            foreach (var t in targets)
+            {
+                await _listener.SendCommandToClient(t.Id, cmd);
             }
+            StatusBlock.Text = $"Warning sent to {targets.Length} clients";
         }
 
-        private void OnScreenshotClick(object sender, RoutedEventArgs e)
+        private async void OnScreenshotClick(object sender, RoutedEventArgs e)
         {
-            if (ClientList.SelectedItem is ClientInfo client && _listener != null)
+            if (_listener == null) return;
+            var target = ClientList.SelectedItem as ClientInfo;
+            var targets = target != null ? new[] { target } : _clients.ToArray();
+
+            if (targets.Length == 0) return;
+
+            string msg = target != null 
+                ? $"Take Screenshot of {target.Hostname}?" 
+                : $"Take Screenshot of ALL {targets.Length} clients?";
+
+            if (MessageBox.Show(msg, "Confirm Screenshot", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+
+            var cmd = new CommandMessage
             {
-                var cmd = new CommandMessage
-                {
-                    MessageType = MessageType.Command,
-                    SenderId = Environment.MachineName,
-                    Psk = Protocol.PSK,
-                    Command = CommandType.Screenshot,
-                    Payload = null
-                };
-                _ = _listener.SendCommandToClient(client.Id, cmd);
-                MessageBox.Show($"Screenshot command sent to {client.Hostname}", "LabGuard");
+                MessageType = MessageType.Command,
+                SenderId = Environment.MachineName,
+                Psk = Protocol.PSK,
+                Command = CommandType.Screenshot,
+                Payload = null
+            };
+
+            foreach (var t in targets)
+            {
+                await _listener.SendCommandToClient(t.Id, cmd);
             }
+            StatusBlock.Text = $"Screenshot command sent to {targets.Length} clients";
         }
 
-        private void OnShutdownClick(object sender, RoutedEventArgs e)
+        private async void OnShutdownClick(object sender, RoutedEventArgs e)
         {
-            if (ClientList.SelectedItem is ClientInfo client && _listener != null)
+            if (_listener == null) return;
+            var target = ClientList.SelectedItem as ClientInfo;
+            var targets = target != null ? new[] { target } : _clients.ToArray();
+
+            if (targets.Length == 0) return;
+
+            string msg = target != null 
+                ? $"SHUTDOWN {target.Hostname}?" 
+                : $"SHUTDOWN ALL {targets.Length} clients? THIS IS DANGEROUS!";
+
+            if (MessageBox.Show(msg, "Confirm Shutdown", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes) return;
+
+            var cmd = new CommandMessage
             {
-                if (MessageBox.Show($"Shutdown {client.Hostname}?", "LabGuard", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    var cmd = new CommandMessage
-                    {
-                        MessageType = MessageType.Command,
-                        SenderId = Environment.MachineName,
-                        Psk = Protocol.PSK,
-                        Command = CommandType.Shutdown,
-                        Payload = null
-                    };
-                    _ = _listener.SendCommandToClient(client.Id, cmd);
-                    MessageBox.Show($"Shutdown command sent to {client.Hostname}", "LabGuard");
-                }
+                MessageType = MessageType.Command,
+                SenderId = Environment.MachineName,
+                Psk = Protocol.PSK,
+                Command = CommandType.Shutdown,
+                Payload = null
+            };
+
+            foreach (var t in targets)
+            {
+                await _listener.SendCommandToClient(t.Id, cmd);
             }
+            StatusBlock.Text = $"Shutdown command sent to {targets.Length} clients";
         }
     }
 }

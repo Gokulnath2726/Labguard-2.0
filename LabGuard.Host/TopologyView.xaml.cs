@@ -434,7 +434,7 @@ namespace LabGuard.Host
                         clientIdByIndex[targetIndex] = sess.Id;
                         hostnameByIndex[targetIndex] = sess.Hostname ?? sess.Id;
                         statusByIndex[targetIndex] = sess.Status;
-                        detailsByIndex[targetIndex] = sess.Status == ClientStatus.Misuse ? (sess.Hostname + " (Unauthorized Activity)") : "Authorized Work";
+                        detailsByIndex[targetIndex] = sess.Details ?? (sess.Status == ClientStatus.Misuse ? "Unauthorized Activity" : "Authorized Work");
                     }
                 }
             }

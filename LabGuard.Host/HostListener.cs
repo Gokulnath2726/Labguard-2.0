@@ -16,6 +16,7 @@ namespace LabGuard.Host
         public NetworkStream Stream { get; set; }
         public DateTime LastHeartbeat { get; set; }
         public ClientStatus Status { get; set; }
+        public string? Details { get; set; }
 
         public ClientSession(string id, TcpClient tcp, NetworkStream stream)
         {
@@ -161,6 +162,7 @@ namespace LabGuard.Host
 
                             _clients[clientId].LastHeartbeat = DateTime.UtcNow;
                             _clients[clientId].Status = status.Status;
+                            _clients[clientId].Details = status.Details;
                         }
 
                         Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Status from {clientId}: {status.Status} - {status.Details}");

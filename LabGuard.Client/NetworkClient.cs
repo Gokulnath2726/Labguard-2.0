@@ -2,14 +2,36 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Drawing;
 using LabGuard.Common;
 
 namespace LabGuard.Client
 {
     public class NetworkClient
     {
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+
+        private string GetActiveWindowTitle()
+        {
+            const int nChars = 256;
+            StringBuilder Buff = new StringBuilder(nChars);
+            IntPtr handle = GetForegroundWindow();
+
+            if (GetWindowText(handle, Buff, nChars) > 0)
+            {
+                return Buff.ToString();
+            }
+            return "Unknown";
+        }
         private readonly string _host;
         private readonly int _port;
         private TcpClient? _tcp;
@@ -61,11 +83,11 @@ namespace LabGuard.Client
                         SenderId = Environment.MachineName,
                         Psk = Protocol.PSK,
                         Status = ClientStatus.Normal,
-                        Details = $"Running {processes} processes | Memory: {GetMemoryUsage()}MB"
+                        Details = $"Running {processes} processes | App: {GetActiveWindowTitle()} | Memory: {GetMemoryUsage()}MB"
                     };
                     var data = MessageSerializer.Serialize(msg);
                     await _stream.WriteAsync(data, 0, data.Length, ct);
-                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Heartbeat sent - {processes} processes, {GetMemoryUsage()}MB memory");
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Heartbeat sent - {processes} processes, App: {GetActiveWindowTitle()}, {GetMemoryUsage()}MB memory");
                     await Task.Delay(TimeSpan.FromSeconds(10), ct);
                 }
                 catch (OperationCanceledException)
@@ -196,7 +218,38 @@ namespace LabGuard.Client
         private async Task ExecuteWarn(string message)
         {
             Console.WriteLine($"[WARNING] {message}");
-            // Display message to user (platform-specific implementation)
+            // Display message to user (red popup)
+            Task.Run(() => {
+                var form = new Form();
+                form.Text = "WARNING - LabGuard";
+                form.BackColor = Color.Red;
+                form.ForeColor = Color.White;
+                form.Size = new Size(500, 250);
+                form.StartPosition = FormStartPosition.CenterScreen;
+                form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                form.TopMost = true;
+                form.MaximizeBox = false;
+                form.MinimizeBox = false;
+
+                var label = new Label();
+                label.Text = message;
+                label.Font = new Font("Segoe UI", 16, FontStyle.Bold);
+                label.TextAlign = ContentAlignment.MiddleCenter;
+                label.Dock = DockStyle.Fill;
+                
+                var btn = new Button();
+                btn.Text = "Dismiss";
+                btn.ForeColor = Color.Black;
+                btn.BackColor = Color.White;
+                btn.Dock = DockStyle.Bottom;
+                btn.Height = 40;
+                btn.Click += (s, e) => form.Close();
+
+                form.Controls.Add(label);
+                form.Controls.Add(btn);
+
+                form.ShowDialog();
+            });
             await Task.CompletedTask;
         }
 

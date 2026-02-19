@@ -13,5 +13,5 @@ namespace LabGuard.Common
         Offline
     }
 
-    public record ClientInfo(string Id, string Hostname, ClientStatus Status);
+    public record ClientInfo(string Id, string Hostname, ClientStatus Status, string? Details = null);
 }

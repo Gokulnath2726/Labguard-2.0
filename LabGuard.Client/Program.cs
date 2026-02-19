@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace LabGuard.Client
 {
@@ -13,6 +14,16 @@ namespace LabGuard.Client
 
             // Ask for Host IP address
             string hostIP = "127.0.0.1";  // Default
+            string lastIpFile = "last_host.txt";
+
+            if (File.Exists(lastIpFile))
+            {
+                string savedIp = File.ReadAllText(lastIpFile).Trim();
+                if (!string.IsNullOrWhiteSpace(savedIp))
+                {
+                    hostIP = savedIp;
+                }
+            }
             
             if (args.Length > 0)
             {
@@ -23,17 +34,16 @@ namespace LabGuard.Client
             else
             {
                 // Ask user to enter Host IP
-                Console.Write("Enter Host IP Address (default 127.0.0.1): ");
+                Console.Write($"Enter Host IP Address (default {hostIP}): ");
                 string? input = Console.ReadLine();
                 
                 if (!string.IsNullOrWhiteSpace(input))
                 {
                     hostIP = input.Trim();
                 }
-                else
-                {
-                    Console.WriteLine("Using default IP: 127.0.0.1");
-                }
+                
+                // Save the new IP
+                File.WriteAllText(lastIpFile, hostIP);
             }
 
             Console.WriteLine($"Connecting to: {hostIP}:9000");

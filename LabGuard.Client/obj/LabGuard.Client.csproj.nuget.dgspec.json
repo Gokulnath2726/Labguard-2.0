@@ -50,10 +50,6 @@
             "System.Drawing.Common": {
               "target": "Package",
               "version": "[8.0.0, )"
-            },
-            "System.Windows.Forms": {
-              "target": "Package",
-              "version": "[4.0.0, )"
             }
           },
           "imports": [
@@ -70,6 +66,9 @@
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
+            },
+            "Microsoft.WindowsDesktop.App.WindowsForms": {
+              "privateAssets": "none"
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.417/PortableRuntimeIdentifierGraph.json"

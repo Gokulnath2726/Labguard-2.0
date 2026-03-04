@@ -1,0 +1,15 @@
+C:\23g133\Project\Labguard\screenshot_test\bin\Debug\net8.0-windows\screenshot_test.exe
+C:\23g133\Project\Labguard\screenshot_test\bin\Debug\net8.0-windows\screenshot_test.deps.json
+C:\23g133\Project\Labguard\screenshot_test\bin\Debug\net8.0-windows\screenshot_test.runtimeconfig.json
+C:\23g133\Project\Labguard\screenshot_test\bin\Debug\net8.0-windows\screenshot_test.dll
+C:\23g133\Project\Labguard\screenshot_test\bin\Debug\net8.0-windows\screenshot_test.pdb
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\screenshot_test.GeneratedMSBuildEditorConfig.editorconfig
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\screenshot_test.AssemblyInfoInputs.cache
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\screenshot_test.AssemblyInfo.cs
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\screenshot_test.csproj.CoreCompileInputs.cache
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\screenshot_test.sourcelink.json
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\screenshot_test.dll
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\refint\screenshot_test.dll
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\screenshot_test.pdb
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\screenshot_test.genruntimeconfig.cache
+C:\23g133\Project\Labguard\screenshot_test\obj\Debug\net8.0-windows\ref\screenshot_test.dll

@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Linq;
+using System.Collections.Generic;
 using LabGuard.Common;
 
 namespace LabGuard.Client
@@ -37,6 +39,19 @@ namespace LabGuard.Client
         private TcpClient? _tcp;
         private NetworkStream? _stream;
         private CancellationTokenSource? _cts;
+
+        private static readonly string[] BlockedProcesses = new string[]
+        {
+            "steam", "epicgameslauncher", "battle.net", "riotclientorigin",
+            "robloxplayerbeta", "valorant", "discord", "spotify", "tor",
+            "minecraft", "javaw"
+        };
+
+        private static readonly string[] BlockedKeywords = new string[]
+        {
+            "roblox", "twitch", "tiktok", "instagram", "facebook", "netflix",
+            "poki", "discord", "game", "valorant", "spotify", "steam"
+        };
 
         public NetworkClient(string host = "127.0.0.1", int port = 9000)
         {
@@ -77,17 +92,35 @@ namespace LabGuard.Client
                 try
                 {
                     var processes = GetRunningProcesses();
+                    var activeWindowTitle = GetActiveWindowTitle();
+                    
+                    ClientStatus currentStatus = ClientStatus.Normal;
+                    string detailsStr = $"Running {processes} processes | App: {activeWindowTitle} | Memory: {GetMemoryUsage()}MB";
+
+                    // Check for misuse
+                    var runningProcessNames = Process.GetProcesses().Select(p => p.ProcessName.ToLower());
+                    if (BlockedProcesses.Any(bp => runningProcessNames.Contains(bp)))
+                    {
+                        currentStatus = ClientStatus.Misuse;
+                        detailsStr = $"[MISUSE DETECTED: BLOCKED APP RUNNING] " + detailsStr;
+                    }
+                    else if (BlockedKeywords.Any(bk => activeWindowTitle.ToLower().Contains(bk)))
+                    {
+                        currentStatus = ClientStatus.Misuse;
+                        detailsStr = $"[MISUSE DETECTED: BLOCKED WINDOW KEYWORD] " + detailsStr;
+                    }
+
                     var msg = new StatusUpdateMessage
                     {
                         MessageType = MessageType.StatusUpdate,
                         SenderId = Environment.MachineName,
                         Psk = Protocol.PSK,
-                        Status = ClientStatus.Normal,
-                        Details = $"Running {processes} processes | App: {GetActiveWindowTitle()} | Memory: {GetMemoryUsage()}MB"
+                        Status = currentStatus,
+                        Details = detailsStr
                     };
                     var data = MessageSerializer.Serialize(msg);
                     await _stream.WriteAsync(data, 0, data.Length, ct);
-                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Heartbeat sent - {processes} processes, App: {GetActiveWindowTitle()}, {GetMemoryUsage()}MB memory");
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] Heartbeat sent - Status: {currentStatus}, Details: {detailsStr}");
                     await Task.Delay(TimeSpan.FromSeconds(10), ct);
                 }
                 catch (OperationCanceledException)
@@ -253,41 +286,89 @@ namespace LabGuard.Client
             await Task.CompletedTask;
         }
 
+        // Win32 P/Invoke for reliable screen capture
+        [DllImport("user32.dll")] private static extern IntPtr GetDesktopWindow();
+        [DllImport("user32.dll")] private static extern IntPtr GetDC(IntPtr hWnd);
+        [DllImport("user32.dll")] private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDC);
+        [DllImport("gdi32.dll")] private static extern IntPtr CreateCompatibleDC(IntPtr hDC);
+        [DllImport("gdi32.dll")] private static extern IntPtr CreateCompatibleBitmap(IntPtr hDC, int nWidth, int nHeight);
+        [DllImport("gdi32.dll")] private static extern IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
+        [DllImport("gdi32.dll")] private static extern bool BitBlt(IntPtr hDestDC, int x, int y, int nWidth, int nHeight, IntPtr hSrcDC, int xSrc, int ySrc, int dwRop);
+        [DllImport("gdi32.dll")] private static extern bool DeleteDC(IntPtr hDC);
+        [DllImport("gdi32.dll")] private static extern bool DeleteObject(IntPtr hObject);
+        [DllImport("user32.dll")] private static extern int GetSystemMetrics(int nIndex);
+        private const int SRCCOPY = 0x00CC0020;
+        private const int SM_CXSCREEN = 0;
+        private const int SM_CYSCREEN = 1;
+
         private async Task ExecuteScreenshot()
         {
             try
             {
                 Console.WriteLine("[SCREENSHOT] Capturing screen...");
-                
-                // Create evidence directory if it doesn't exist
-                string evidenceDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LabGuard", "Evidence");
+
+                string evidenceDir = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "LabGuard", "Evidence");
                 Directory.CreateDirectory(evidenceDir);
 
                 string filename = $"screenshot_{DateTime.Now:yyyyMMdd_HHmmss}.png";
                 string filepath = Path.Combine(evidenceDir, filename);
 
-                // Capture screenshot
-                using (var bitmap = new System.Drawing.Bitmap(
-                    System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,
-                    System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height,
-                    System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+                Exception? captureError = null;
+                var thread = new Thread(() =>
                 {
-                    using (var g = System.Drawing.Graphics.FromImage(bitmap))
+                    IntPtr desktopWnd = IntPtr.Zero;
+                    IntPtr desktopDC = IntPtr.Zero;
+                    IntPtr memDC = IntPtr.Zero;
+                    IntPtr hBitmap = IntPtr.Zero;
+                    IntPtr oldBitmap = IntPtr.Zero;
+                    try
                     {
-                        g.CopyFromScreen(System.Windows.Forms.Screen.PrimaryScreen.Bounds.Location, System.Drawing.Point.Empty, bitmap.Size);
-                    }
-                    bitmap.Save(filepath, System.Drawing.Imaging.ImageFormat.Png);
-                }
+                        int width  = GetSystemMetrics(SM_CXSCREEN);
+                        int height = GetSystemMetrics(SM_CYSCREEN);
 
-                Console.WriteLine($"[SCREENSHOT] Saved to {filepath}");
+                        desktopWnd = GetDesktopWindow();
+                        desktopDC  = GetDC(desktopWnd);
+                        memDC      = CreateCompatibleDC(desktopDC);
+                        hBitmap    = CreateCompatibleBitmap(desktopDC, width, height);
+                        oldBitmap  = SelectObject(memDC, hBitmap);
+
+                        BitBlt(memDC, 0, 0, width, height, desktopDC, 0, 0, SRCCOPY);
+
+                        // Convert the HBITMAP to a managed Bitmap and save
+                        using var bmp = System.Drawing.Image.FromHbitmap(hBitmap);
+                        bmp.Save(filepath, System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                    catch (Exception ex)
+                    {
+                        captureError = ex;
+                    }
+                    finally
+                    {
+                        if (oldBitmap != IntPtr.Zero) SelectObject(memDC, oldBitmap);
+                        if (hBitmap   != IntPtr.Zero) DeleteObject(hBitmap);
+                        if (memDC     != IntPtr.Zero) DeleteDC(memDC);
+                        if (desktopDC != IntPtr.Zero) ReleaseDC(desktopWnd, desktopDC);
+                    }
+                });
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start();
+                thread.Join();
+
+                if (captureError != null)
+                    Console.WriteLine($"[SCREENSHOT] Capture failed: {captureError.Message}");
+                else
+                    Console.WriteLine($"[SCREENSHOT] Saved to {filepath}");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[SCREENSHOT] Error: {ex.Message}");
             }
-            
+
             await Task.CompletedTask;
         }
+
 
         private async Task ExecuteShutdown()
         {

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LabGuard.Common")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f490f417d685b829af122f6adb9823e09f9b5643")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bb00d6d08bf51781976987f34fa55f483d714972")]
 [assembly: System.Reflection.AssemblyProductAttribute("LabGuard.Common")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LabGuard.Common")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
